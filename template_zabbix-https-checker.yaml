@@ -1,0 +1,38 @@
+zabbix_export:
+  version: '5.2'
+  date: '2021-03-27T15:38:14Z'
+  groups:
+    -
+      name: Templates
+  templates:
+    -
+      template: template_sslchecker
+      name: template_sslchecker
+      description: 'https://github.com/altuhovsu/https-ssl-cert-check-zabbix'
+      groups:
+        -
+          name: Templates
+      applications:
+        -
+          name: sslchecker
+      discovery_rules:
+        -
+          name: sslchecker
+          key: 'sslchecker[]'
+          delay: '900'
+          lifetime: 1d
+          item_prototypes:
+            -
+              name: 'ssl ttl for {#DOMAIN}'
+              key: 'sslchecker[{#DOMAIN},TTL]'
+              delay: '1800'
+              value_type: FLOAT
+              units: days
+              applications:
+                -
+                  name: sslchecker
+              trigger_prototypes:
+                -
+                  expression: '{last()}<7'
+                  name: 'low or bad ttl for ssl certificate for {#DOMAIN}'
+                  priority: AVERAGE
