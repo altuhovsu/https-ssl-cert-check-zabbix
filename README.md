@@ -19,7 +19,7 @@ echo "google.com:143/imap" > https-ssl-cert-check-zabbix/domains.txt # add some 
 echo "google.com:443" > https-ssl-cert-check-zabbix/domains.txt # add some domains and ports/protocol
 chown -R zabbix:zabbix https-ssl-cert-check-zabbix
 cp userparameter_zabbix_https_checker.conf /etc/zabbix/zabbix_agent2.d/userparameter_zabbix_https_checker.conf
-crontab -u zabbix -l | (cat - ; echo "*/10 * * * * /opt/userparameter_zabbix_https_checker.conf/cron.sh &> /dev/null") | crontab -u zabbix -
+crontab -u zabbix -l | (cat - ; echo "*/10 * * * * /opt/https-ssl-cert-check-zabbix/cron.sh &> /dev/null") | crontab -u zabbix -
 ```
 
 Import `template_zabbix-https-checker.yaml` to zabbix server and link with your host.
