@@ -3,7 +3,7 @@
 
 Auto discovery from `domains.txt`.
 ###### Items prototypes
-* **ssl ttl for {#DOMAIN}** - number of days before the expiration date
+* **ssl ttl for {#DOMAIN}** - number of days before the expiration date or -65535 if error
 
 ###### Trigger prototypes
 * **low or bad ttl for ssl certificate for {#DOMAIN}** - expires in 7 days or less or error in fetching
