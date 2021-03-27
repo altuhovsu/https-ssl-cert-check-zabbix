@@ -22,9 +22,9 @@ cp userparameter_zabbix_https_checker.conf /etc/zabbix/zabbix_agent2.d/userparam
 crontab -u zabbix -l | (cat - ; echo "*/10 * * * * /opt/userparameter_zabbix_https_checker.conf/cron.sh &> /dev/null") | crontab -u zabbix -
 ```
 
-Import `template_zabbix-https-checker.xml` to zabbix server and link with your host.
+Import `template_zabbix-https-checker.yaml` to zabbix server and link with your host.
 
 Based on the projects:
-[https-ssl-cert-check-zabbix](https://github.com/selivan/https-ssl-cert-check-zabbix)
-[zabbix-https-checker](https://github.com/tarwirdur/zabbix-https-checker).
+* [https-ssl-cert-check-zabbix](https://github.com/selivan/https-ssl-cert-check-zabbix)
+* [zabbix-https-checker](https://github.com/tarwirdur/zabbix-https-checker).
 
