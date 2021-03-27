@@ -18,7 +18,7 @@ git clone https://github.com/altuhovsu/https-ssl-cert-check-zabbix
 echo "google.com:143/imap" > https-ssl-cert-check-zabbix/domains.txt # add some domains and ports/protocol
 echo "google.com:443" > https-ssl-cert-check-zabbix/domains.txt # add some domains and ports/protocol
 chown -R zabbix:zabbix https-ssl-cert-check-zabbix
-cp userparameter_zabbix_https_checker.conf /etc/zabbix/zabbix_agent2.d/userparameter_zabbix_https_checker.conf
+cp https-ssl-cert-check-zabbix/userparameter_zabbix_https_checker.conf /etc/zabbix/zabbix_agent2.d/userparameter_zabbix_https_checker.conf
 crontab -u zabbix -l | (cat - ; echo "*/10 * * * * /opt/https-ssl-cert-check-zabbix/cron.sh &> /dev/null") | crontab -u zabbix -
 ```
 
