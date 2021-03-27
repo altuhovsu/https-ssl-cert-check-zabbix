@@ -1,74 +1,30 @@
-Script to check validity and expiration of TLS/SSL certificate on remote host. Supports TLS SNI and STARTTLS for protocols like SMTP.
 
-May be used standalone or with Zabbix. See example of integration in `userparameters_ssl_cert_check.conf` and [zabbix manual](https://www.zabbix.com/documentation/current/manual/config/items/userparameters) about user parameters.
+### Provides
 
-#### Usage
+Auto discovery from `domains.txt`.
+###### Items prototypes
+* **ssl ttl for {#DOMAIN}** - number of days before the expiration date
 
-`ssl_cert_check.sh valid|expire <hostname or IP> [port[/starttls protocol]] [domain for TLS SNI] [check timeout (seconds)]`
+###### Trigger prototypes
+* **low or bad ttl for ssl certificate for {#DOMAIN}** - expires in 7 days or less or error in fetching
 
-* `[port]` optional, default is 443
-* `[starttls protocol]` optional, use protocol-specific message to switch to TLS communication. See `man s_client` option `-starttls` for supported protocols, like `smtp`, `ftp`, `ldap`.
-* `[domain for TLS SNI]` optional, default is `<hostname or IP>`.  
-[SNI](https://en.wikipedia.org/wiki/Server_Name_Indication)*(Server Name Indication) is used to specify certificate domain name if it differs from the hostname.*
-* `[check timeout (seconds)]` optional, default is 5 seconds
+___
 
-#### Return values
+### Installation
 
-* `1|0`  for validity check: 1 - valid, 0 - invalid, expired or unavailable
-* `N`  number of days left for expiration check. Zero or negative value means certificate is expired
-* `-65535`  site was unavailable for expiration check or incorrect script parameters
-
-Exit code is always 0, otherwise zabbix agent fails to get item value and triggers would not work. 
-
-If the script is running without terminal(from zabbix), error messages are not printed, only exit code. The reason is that zabbix merges stdout and strerr to get item value.
-
-#### Examples
-
-```bash
-user@host:~$ ./ssl_cert_check.sh valid valid.example.com
-1
-
-user@host:~$ ./ssl_cert_check.sh valid imap.valid.example.com 993
-1
-
-# SMTP on port 25 with STARTTLS to switch to TLS communication
-user@host:~$ ./ssl_cert_check.sh valid smtp.valid.example.com 25/smtp
-1
-
-user@host:~$ ./ssl_cert_check.sh valid invalid.example.com
-0
-
-# Expired certificate is not valid
-user@host:~$ ./ssl_cert_check.sh valid expired.example.com
-0
-
-user@host:~$ ./ssl_cert_check.sh expire effective-next-90-days.example.com
-90
-
-user@host:~$ ./ssl_cert_check.sh expire expired-37-days-ago.example.com
--37
-
-# NOTE: an error message is shown to stderr only when running on a terminal
-# Without terminal(from zabbix), only the result is printed to stdout
-user@host:~$ ./ssl_cert_check.sh expire unavailable.example.com
--65535
-ERROR: Failed to get certificate
-
-# Check 127.0.0.1:443 for a valid certificate for example.com
-# TLS SNI(Server Name Indication) is set to example.com
-user@host:~$ ./ssl_cert_check.sh valid 127.0.0.1 443 example.com
-1
-
-# Check 127.0.0.1:443 for a valid certificate for example.com
-# TLS SNI(Server Name Indication) is set to example.com
-# Check timeout is 10 seconds(default is 5)
-user@host:~$ ./ssl_cert_check.sh valid 127.0.0.1 443 example.com 10
-1
+``` bash
+cd /opt
+git clone https://github.com/altuhovsu/https-ssl-cert-check-zabbix
+echo "google.com:143/imap" > https-ssl-cert-check-zabbix/domains.txt # add some domains and ports/protocol
+echo "google.com:443" > https-ssl-cert-check-zabbix/domains.txt # add some domains and ports/protocol
+chown -R zabbix:zabbix https-ssl-cert-check-zabbix
+cp userparameter_zabbix_https_checker.conf /etc/zabbix/zabbix_agent2.d/userparameter_zabbix_https_checker.conf
+crontab -u zabbix -l | (cat - ; echo "*/10 * * * * /opt/userparameter_zabbix_https_checker.conf/cron.sh &> /dev/null") | crontab -u zabbix -
 ```
 
-#### Using with busybox, like Alpine-based Docker images
+Import `template_zabbix-https-checker.xml` to zabbix server and link with your host.
 
-Busybox `date` can not parse date format from `openssl`. If you are using the script in busybox, for example in Alpine-based Docker images, install `coreutils` and `bash` packages.
+Based on the projects:
+[https-ssl-cert-check-zabbix](https://github.com/selivan/https-ssl-cert-check-zabbix)
+[zabbix-https-checker](https://github.com/tarwirdur/zabbix-https-checker).
 
-
-**P.S.** If this code is useful for you - don't forget to put a star on it's [github repo](https://github.com/selivan/https-ssl-cert-check-zabbix).
