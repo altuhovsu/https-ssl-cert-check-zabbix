@@ -20,6 +20,7 @@ echo "google.com:443" > https-ssl-cert-check-zabbix/domains.txt # add some domai
 chown -R zabbix:zabbix https-ssl-cert-check-zabbix
 cp https-ssl-cert-check-zabbix/userparameters_ssl_cert_check.conf /etc/zabbix/zabbix_agent2.d/userparameters_ssl_cert_check.conf
 crontab -u zabbix -l | (cat - ; echo "*/10 * * * * /opt/https-ssl-cert-check-zabbix/cron.sh &> /dev/null") | crontab -u zabbix -
+sudo -u zabbix https-ssl-cert-check-zabbix/cron.sh
 systemctl restart zabbix-agent2
 ```
 
